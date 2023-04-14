@@ -4,12 +4,15 @@ from cosas import distribuciones
 
 
 # ventana que se mostrara dentro del frame de la pantalla de inicio
-def uniformeV(ventana):
+def uniformeV(ventana, tabla):
     # Crear un frame para la "ventana interna"
     internal_frame = tk.Frame(ventana,  relief=tk.RIDGE, bg="white")
 
     # Ubicar el frame en el centro de la pantalla
-    internal_frame.grid(row=1, column=0)
+    internal_frame.grid(row=2, column=0)
+
+    titulo_u = tk.Label(internal_frame, text="Uniforme", font=("Arial", 16, "bold"))
+    titulo_u.pack()
 
     # etiqueta de texto
     label1 = tk.Label(internal_frame, text="Cantidad de numeros a generar")
@@ -35,30 +38,35 @@ def uniformeV(ventana):
     numero3 = tk.Entry(internal_frame)
     numero3.pack()
 
-    # lbl donde guardaras res
-    res = tk.Label(internal_frame, text="res:")
+    # cantidad de intervalos adsasdasd
+    res = tk.Label(internal_frame, text="Ingrese Cantidad de intervalos")
     res.pack()
+    interv = tk.Entry(internal_frame)
+    interv.pack()
 
     # es un boton        v            texto a mostrar                   para invocar una fun que necesita parametros
-    boton = tk.Button(internal_frame, text="Calcular", command=lambda: distribuciones.uniforme(int(numero1.get()), int(numero2.get()), int(numero3.get()), table))
+    boton = tk.Button(internal_frame, text="Calcular", command=lambda: distribuciones.uniforme(int(numero1.get()),
+                                                                                               int(numero2.get()),
+                                                                                               int(numero3.get()),
+                                                                                                int(interv.get()),
+                                                                                               tabla))
     boton.pack()
-
-    table = ttk.Treeview(internal_frame, columns=("Numeros"))
-    table.pack()
 
     # Agregar un botón en la "ventana interna"
     button = tk.Button(internal_frame, text="Cerrar ventana", command=internal_frame.destroy)
     button.pack(pady=10)
-    return table
 
 
 # ventana que se mostrara dentro del frame de la pantalla de inicio
-def exponencialV(ventana):
+def exponencialV(ventana,tabla):
     # Crear un frame para la "ventana interna"
     internal_frame = tk.Frame(ventana, width=1980, height=720, bg="white")
 
     # Ubicar el frame en el centro de la pantalla
-    internal_frame.grid(row=1, column=0)
+    internal_frame.grid(row=2, column=0)
+
+    titulo_e = tk.Label(internal_frame, text="Exponencial", font=("Arial", 16, "bold"))
+    titulo_e.pack()
 
     # etiqueta de texto
     label1 = tk.Label(internal_frame, text="Cantidad de numeros a generar")
@@ -76,55 +84,111 @@ def exponencialV(ventana):
     numero2 = tk.Entry(internal_frame)
     numero2.pack()
 
-    # lbl donde guardaras res
-    res = tk.Label(internal_frame, text="res:")
+    # cantidad de intervalos adsasdasd
+    res = tk.Label(internal_frame, text="Ingrese Cantidad de intervalos")
     res.pack()
-
+    interv = tk.Entry(internal_frame)
+    interv.pack()
     # es un boton        v            texto a mostrar                   fun que necesita parametros
-    boton = tk.Button(internal_frame, text="Calcular", command=lambda: distribuciones.exponencial(int(numero1.get()), int(numero2.get()), table))
+    boton = tk.Button(internal_frame, text="Calcular", command=lambda: distribuciones.exponencial(int(numero1.get()),
+                                                                                                  int(numero2.get()),
+                                                                                                  int(interv.get()),tabla))
     boton.pack()
+    # Agregar un botón en la "ventana interna"
+    button = tk.Button(internal_frame, text="Cerrar ventana", command=internal_frame.destroy)
+    button.pack(pady=10)
 
-    table = ttk.Treeview(internal_frame, columns=("Numeros"))
-    table.pack()
+
+def poissonV(ventana,tabla):
+    # Crear un frame para la "ventana interna"
+    internal_frame = tk.Frame(ventana,  bg="white")
+
+    # Ubicar el frame en el centro de la pantalla
+    internal_frame.grid(row=2, column=0)
+
+    titulo_p = tk.Label(internal_frame, text="Poisson", font=("Arial", 16, "bold"))
+    titulo_p.pack()
+
+    # etiqueta de texto
+    label1 = tk.Label(internal_frame, text="Cantidad de numeros a generar")
+    label1.pack()
+
+    # para cargar numero
+    numerosGenerar = tk.Entry(internal_frame)
+    numerosGenerar.pack()
+
+    # etiqueta de texto
+    label2 = tk.Label(internal_frame, text="Ingresar Media:")
+    label2.pack()
+
+    # para cargar numero
+    media = tk.Entry(internal_frame)
+    media.pack()
+
+    # cantidad de intervalos adsasdasd
+    res = tk.Label(internal_frame, text="Ingrese Cantidad de intervalos")
+    res.pack()
+    interv = tk.Entry(internal_frame)
+    interv.pack()
+    # es un boton        v            texto a mostrar                   fun que necesita parametros
+    boton = tk.Button(internal_frame, text="Calcular", command=lambda: distribuciones.poisson(int(media.get()),
+                                                                                              int(numerosGenerar.get()),
+                                                                                              int(interv.get()),tabla))
+    boton.pack()
 
     # Agregar un botón en la "ventana interna"
     button = tk.Button(internal_frame, text="Cerrar ventana", command=internal_frame.destroy)
     button.pack(pady=10)
 
 
-def poissonV(ventana):
+def normalV(ventana,tabla):
     # Crear un frame para la "ventana interna"
     internal_frame = tk.Frame(ventana,  bg="white")
 
     # Ubicar el frame en el centro de la pantalla
-    internal_frame.grid(row=1, column=0)
+    internal_frame.grid(row=2, column=0)
+
+    titulo_n = tk.Label(internal_frame, text="Normal", font=("Arial", 16, "bold"))
+    titulo_n.pack()
 
     # etiqueta de texto
     label1 = tk.Label(internal_frame, text="Cantidad de numeros a generar")
     label1.pack()
 
     # para cargar numero
-    numero1 = tk.Entry(internal_frame)
-    numero1.pack()
+    numeros_a_generar = tk.Entry(internal_frame)
+    numeros_a_generar.pack()
 
     # etiqueta de texto
-    label2 = tk.Label(internal_frame, text="Ingresar Media:")
-    label2.pack()
+    txt_media = tk.Label(internal_frame, text="Ingresar Media:")
+    txt_media.pack()
 
     # para cargar numero
-    numero2 = tk.Entry(internal_frame)
-    numero2.pack()
+    media = tk.Entry(internal_frame)
+    media.pack()
 
-    # lbl donde guardaras res
-    res = tk.Label(internal_frame, text="res:")
+    # etiqueta de texto
+    txt_de = tk.Label(internal_frame, text="Ingresar De:")
+    txt_de.pack()
+
+    # para cargar numero
+    de = tk.Entry(internal_frame)
+    de.pack()
+    # cantidad de intervalos adsasdasd
+    res = tk.Label(internal_frame, text="Ingrese Cantidad de intervalos")
     res.pack()
+    interv = tk.Entry(internal_frame)
+    interv.pack()
 
     # es un boton        v            texto a mostrar                   fun que necesita parametros
-    boton = tk.Button(internal_frame, text="Calcular", command=lambda: distribuciones.poisson(int(numero2.get()), int(numero1.get()), table))
+    boton = tk.Button(internal_frame, text="Calcular", command=lambda: distribuciones.normal(
+                                                                                            int(numeros_a_generar.get()),
+                                                                                            int(media.get()),
+                                                                                            int(de.get()),
+                                                                                            int(interv.get()),tabla))
     boton.pack()
 
-    table = ttk.Treeview(internal_frame, columns=("Numeros"))
-    table.pack()
+    table = ttk.Treeview(internal_frame, columns="Numeros")
 
     # Agregar un botón en la "ventana interna"
     button = tk.Button(internal_frame, text="Cerrar ventana", command=internal_frame.destroy)
