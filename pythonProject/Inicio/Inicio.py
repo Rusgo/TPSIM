@@ -1,10 +1,5 @@
 import tkinter as tk
 from tkinter import ttk
-import random
-import time
-import pandas as pd
-import cosas
-
 import ventanas
 
 from cosas.graficador import graficar
