@@ -3,32 +3,17 @@ from tkinter import ttk
 from tkinter import messagebox
 import ventanas
 
-is_open = False
-
 
 # metodo para asignar la ventana al frame
 def abrir():
-    global is_open
-    if not is_open:
-        if combo.get() == "Uniforme":
-            ventanas.uniformeV(ventana, tablachi)
-            is_open = True
-        elif combo.get() == "Exponencial":
-            ventanas.exponencialV(ventana, tablachi)
-            is_open = True
-        elif combo.get() == "Poisson":
-            ventanas.poissonV(ventana, tablachi)
-            is_open = True
-        elif combo.get() == "Normal":
-            ventanas.normalV(ventana, tablachi)
-            is_open = True
-    else:
-        messagebox.showinfo("info", "Cierre el modelo actual para abrir otro")
-
-
-def cerrar_var():
-    global is_open
-    is_open = False
+    if combo.get() == "Uniforme":
+        ventanas.uniformeV(ventana, tablachi)
+    elif combo.get() == "Exponencial":
+        ventanas.exponencialV(ventana, tablachi)
+    elif combo.get() == "Poisson":
+        ventanas.poissonV(ventana, tablachi)
+    elif combo.get() == "Normal":
+        ventanas.normalV(ventana, tablachi)
 
 
 if __name__ == '__main__':
@@ -45,7 +30,7 @@ if __name__ == '__main__':
     ventana.rowconfigure(1, weight=10)
     ventana.rowconfigure(2, weight=80)
     # titulo
-    titulo = tk.Label(ventana, text="Trabajo Practico Nro 1", font=("Arial", 16, "bold"))
+    titulo = tk.Label(ventana, text="Trabajo Practico Nro 1.", font=("Arial", 16, "bold"))
     titulo.grid(row=0, columnspan=3)
     # etiqueta de texto
     label2 = tk.Label(ventana, text="Modelo")
@@ -65,5 +50,9 @@ if __name__ == '__main__':
     #tabla chi cuadrado
     tablachi = ttk.Treeview(ventana, columns=("Desde-Hasta","Fo","fe","c", "cAcu"))
     tablachi.grid(row=2, column=3)
+
+    cerrado = tk.Label(ventana, text="")
+    tablachi.grid(row=2, column=4)
+
     # ventana iniciada
     ventana.mainloop()
