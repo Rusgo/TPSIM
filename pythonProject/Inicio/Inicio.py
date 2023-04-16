@@ -18,6 +18,7 @@ def abrir():
     elif combo.get() == "Normal":
         ventanas.normalV(ventana, tablachi)
 
+
 def testChi(error):
     res = tablachi.get_children()
     ult = res[-1]

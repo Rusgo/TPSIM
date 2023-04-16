@@ -2,6 +2,7 @@ import math
 from scipy.stats import chi2
 import Inicio
 from Inicio import ventanas
+from cosas import distribuciones
 
 def chicuad(n, min, max, listan_numeros, clases, lambd, media, de, funprob, tabla):
     Inicio.ventanas.preparar_tabla_chi(tabla)
@@ -11,9 +12,6 @@ def chicuad(n, min, max, listan_numeros, clases, lambd, media, de, funprob, tabl
     hasta = desde + ancho
     chiacu = 0
     fo = 0
-    uni = 0
-    if funprob == 0:
-        uni = probUniforme(n, clases)
 
     for numero in listan_numeros:
         valor = numero
@@ -22,17 +20,10 @@ def chicuad(n, min, max, listan_numeros, clases, lambd, media, de, funprob, tabl
         elif hasta <= valor:
             # hacemos calculo de probabilidad si acuEsperada no llega a 5 no cerramos el intervalo, calculamos c y lo
             # ponemos en la tabla
-            if funprob == 1:
-                prob = probExponencial(lambd, (desde+hasta)/2, desde, hasta)
-            elif funprob == 2:
-                prob = probPoisson()
-            elif funprob == 3:
-                prob = probNormal((desde+hasta)/2, media, de, hasta, desde)
-            if funprob == 0:
-                fe = uni
-            else:
-                fe = prob * n
+            prob, grados_de_libertad = tipo(funprob, lambd, desde, hasta, clases, media, de)
             # agrego cosas a la tabla
+            fe = prob * n
+
             if fe >= 5:
                 intervalo = str(round(desde, 2)) + "-" + str(round(hasta, 2))
                 chi = pow((fo-fe), 2)/fe
@@ -45,22 +36,9 @@ def chicuad(n, min, max, listan_numeros, clases, lambd, media, de, funprob, tabl
             else:
                 hasta += ancho
                 fo += 1
-    if funprob == 0:
-        prob = probUniforme(n, clases)
-        grados_de_libertad = clases - 0 - 1  # número de grados de libertad
-    elif funprob == 1:
-        prob = probExponencial(lambd, (desde + hasta) / 2, desde, hasta)
-        grados_de_libertad = clases - 1 - 1  # número de grados de libertad
-    elif funprob == 2:
-        prob = probPoisson()
-    elif funprob == 3:
-        prob = probNormal((desde + hasta) / 2, media, de, hasta, desde)
-        grados_de_libertad = clases - 2 - 1  # número de grados de libertad
+    prob, grados_de_libertad = tipo(funprob, lambd, desde, hasta, clases, media, de)
 
-    if funprob == 0:
-        fe = uni
-    else:
-        fe = prob * n
+    fe = prob*n
 
     hasta += ancho
 
@@ -91,22 +69,6 @@ def chicuad(n, min, max, listan_numeros, clases, lambd, media, de, funprob, tabl
         print("No se puede rechazar la hipótesis nula.")
 
 
-# calculos de probabilidad de cada distrib
-def probNormal(marca, media, de, hasta,desde):
-    res = ((math.exp((-0.5)*(pow(((marca-media)/de), 2))))/(de*math.sqrt(2*math.pi)))*(hasta-desde)
-    return res
-
-
-def probPoisson():
-    pass
-
-def probExponencial(lambd, marca, desde,hasta):
-    res = (lambd*math.exp(-lambd*marca)) * (hasta - desde)
-    return res
-
-
-def probUniforme(n, clases):
-    return round(n/clases)
 
 
 def ks(n, min, max, listan_numeros, clases, lambd, media, de, funprob, tabla):  # ver si funciona posta o da cualquier verdurta
@@ -132,19 +94,8 @@ def ks(n, min, max, listan_numeros, clases, lambd, media, de, funprob, tabla):  
         if desde <= valor < hasta:
             fo += 1
         elif hasta <= valor != max:
-            if funprob == 0:
-                pe = 1/clases
-                grados_de_libertad = clases - 0 - 1  # número de grados de libertad
-            elif funprob == 1:
-                pe = probExponencial(lambd, (desde + hasta) / 2, desde, hasta)
-                grados_de_libertad = clases - 1 - 1  # número de grados de libertad
-            elif funprob == 2:
-                pe = probPoisson()
-            elif funprob == 3:
-                pe = probNormal((desde + hasta) / 2, media, de, hasta, desde)
-                grados_de_libertad = clases - 2 - 1  # número de grados de libertad
+            pe, grados_de_libertad = tipo(funprob, lambd, desde, hasta, clases, media, de) # los if repetidos 20 veces en un metodo
             x = (str(round(desde, 2)) + "-" + str(round(hasta, 2)))
-
             # calculamos lo necesario para obtener el resultado de la ks
             pe_acu += pe
             po = fo/n
@@ -166,17 +117,7 @@ def ks(n, min, max, listan_numeros, clases, lambd, media, de, funprob, tabla):  
     desde = hasta
     hasta = desde + ancho
 
-    if funprob == 0:
-        pe = 1/clases
-        grados_de_libertad = clases - 0 - 1  # número de grados de libertad
-    elif funprob == 1:
-        pe = probExponencial(lambd, (desde + hasta) / 2, desde, hasta)
-        grados_de_libertad = clases - 1 - 1  # número de grados de libertad
-    elif funprob == 2:
-        pe = probPoisson()
-    elif funprob == 3:
-        pe = probNormal((desde + hasta) / 2, media, de, hasta, desde)
-        grados_de_libertad = clases - 2 - 1  # número de grados de libertad
+    pe, grados_de_libertad = tipo(funprob, lambd, desde, hasta, clases, media, de)
 
     pe_acu += pe
     po = fo / n
@@ -194,3 +135,18 @@ def calculo(n, min, max, listan_numeros, clases, lambd, media, de, funprob, tabl
         ks(n, min, max, listan_numeros, clases, lambd, media, de, funprob, tabla)
     else:
         chicuad(n, min, max, listan_numeros, clases, lambd, media, de, funprob, tabla)
+
+
+def tipo(funprob, lambd, desde, hasta, clases, media, de):
+    if funprob == 0:
+        pe = 1/clases
+        grados_de_libertad = clases - 0 - 1  # número de grados de libertad
+    elif funprob == 1:
+        pe = distribuciones.probExponencial(lambd, (desde + hasta) / 2, desde, hasta)
+        grados_de_libertad = clases - 1 - 1  # número de grados de libertad
+    elif funprob == 2:
+        pe = distribuciones.probPoisson()
+    elif funprob == 3:
+        pe = distribuciones.probNormal((desde + hasta) / 2, media, de, hasta, desde)
+        grados_de_libertad = clases - 2 - 1  # número de grados de libertad
+    return pe, grados_de_libertad

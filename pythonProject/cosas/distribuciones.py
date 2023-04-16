@@ -74,6 +74,7 @@ def normal(n, media, de, clases, tabla):
     Intervalos.calculo(n, numeros_random[0], numeros_random[-1], numeros_random, clases, False, media, de, 3, tabla)
     graficar(n, numeros_random[0], numeros_random[-1], numeros_random, clases, "Normal")
 
+
 def generarNums(n):
     nums = []
     for i in range(n):
@@ -81,6 +82,24 @@ def generarNums(n):
         nums.append(num)
     return nums
 
+
+# calculos de probabilidad de cada distrib
+def probNormal(marca, media, de, hasta,desde):
+    res = ((math.exp((-0.5)*(pow(((marca-media)/de), 2))))/(de*math.sqrt(2*math.pi)))*(hasta-desde)
+    return res
+
+
+def probPoisson():
+    pass
+
+
+def probExponencial(lambd, marca, desde,hasta):
+    res = (lambd*math.exp(-lambd*marca)) * (hasta - desde)
+    return res
+
+
+def probUniforme(n, clases):
+    return round(n/clases)
 
 
 
