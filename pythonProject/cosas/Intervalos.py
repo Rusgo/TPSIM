@@ -1,7 +1,10 @@
 import math
 from scipy.stats import chi2
+import Inicio
+from Inicio import ventanas
 
 def chicuad(n, min, max, listan_numeros, clases, lambd, media, de, funprob, tabla):
+    Inicio.ventanas.preparar_tabla_chi(tabla)
     clases = int(pow(n, 1/2))
     ancho = (max - min) / clases
     desde = min
@@ -80,7 +83,7 @@ def chicuad(n, min, max, listan_numeros, clases, lambd, media, de, funprob, tabl
 
     valor_p = 1 - chi2.cdf(chiacu, grados_de_libertad)
 
-    nivel_de_significancia = 0.05  # nivel de significancia deseado, por ejemplo 0.05 para un nivel de confianza del 95%
+    nivel_de_significancia = 0.1  # nivel de significancia deseado, por ejemplo 0.05 para un nivel de confianza del 95%
 
     if valor_p < nivel_de_significancia:
         print("Se rechaza la hipótesis nula.")
@@ -104,3 +107,90 @@ def probExponencial(lambd, marca, desde,hasta):
 
 def probUniforme(n, clases):
     return round(n/clases)
+
+
+def ks(n, min, max, listan_numeros, clases, lambd, media, de, funprob, tabla):  # ver si funciona posta o da cualquier verdurta
+
+    # cambio el nombre a las columnas por los del metodo ks lo podemos pasar aparte y hacer un if para poner el encabezado de ks o chi cuadrado
+    Inicio.ventanas.preparar_tabla_ks(tabla)
+
+    clases = int(pow(n, 1/2))
+    ancho = (max - min) / clases
+    desde = min
+    hasta = desde + ancho
+    x = []
+    y = []
+    fo = 0
+    ks = 0
+    res = 0
+    maximo = 0
+    pe_acu = 0  # acumulamos el valor de pe
+    po_acu = 0  # acumulamos evalor de po
+
+    for numero in listan_numeros:
+        valor = numero
+        if desde <= valor < hasta:
+            fo += 1
+        elif hasta <= valor != max:
+            if funprob == 0:
+                pe = 1/clases
+                grados_de_libertad = clases - 0 - 1  # número de grados de libertad
+            elif funprob == 1:
+                pe = probExponencial(lambd, (desde + hasta) / 2, desde, hasta)
+                grados_de_libertad = clases - 1 - 1  # número de grados de libertad
+            elif funprob == 2:
+                pe = probPoisson()
+            elif funprob == 3:
+                pe = probNormal((desde + hasta) / 2, media, de, hasta, desde)
+                grados_de_libertad = clases - 2 - 1  # número de grados de libertad
+            x = (str(round(desde, 2)) + "-" + str(round(hasta, 2)))
+
+            # calculamos lo necesario para obtener el resultado de la ks
+            pe_acu += pe
+            po = fo/n
+            po_acu += po
+
+            res = abs(pe_acu-po_acu)
+            if res > maximo:
+                maximo = res
+
+            tabla.insert(parent='', index='end', values=(x, fo, str(pe*n), po, pe, po_acu, pe_acu, res, maximo))
+            fo = 1
+
+            desde = hasta
+            hasta = desde + ancho
+
+        elif valor == max:
+            fo += 1
+
+    desde = hasta
+    hasta = desde + ancho
+
+    if funprob == 0:
+        pe = 1/clases
+        grados_de_libertad = clases - 0 - 1  # número de grados de libertad
+    elif funprob == 1:
+        pe = probExponencial(lambd, (desde + hasta) / 2, desde, hasta)
+        grados_de_libertad = clases - 1 - 1  # número de grados de libertad
+    elif funprob == 2:
+        pe = probPoisson()
+    elif funprob == 3:
+        pe = probNormal((desde + hasta) / 2, media, de, hasta, desde)
+        grados_de_libertad = clases - 2 - 1  # número de grados de libertad
+
+    pe_acu += pe
+    po = fo / n
+    po_acu += po
+
+    res = abs(pe_acu - po_acu)
+    if res > maximo:
+        maximo = res
+
+    tabla.insert(parent='', index='end', values=(x, fo, str(pe*n), po, pe, po_acu, pe_acu, res, maximo))
+
+
+def calculo(n, min, max, listan_numeros, clases, lambd, media, de, funprob, tabla):
+    if n <= 30:
+        ks(n, min, max, listan_numeros, clases, lambd, media, de, funprob, tabla)
+    else:
+        chicuad(n, min, max, listan_numeros, clases, lambd, media, de, funprob, tabla)

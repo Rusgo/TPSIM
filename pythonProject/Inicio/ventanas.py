@@ -228,3 +228,16 @@ def cerrar(i):
     global is_open
     is_open = False
 
+
+def preparar_tabla_ks(tabla):
+    colu = ["d-h", "fo", "fe", "po", "pe", "poacu", "peacu", "dif", "max"]
+    for col, nombre_columna in enumerate(colu):
+        tabla.column(column=col, width=100, minwidth=50, anchor='w')
+        tabla.heading(column=col, text=nombre_columna, anchor='w')
+
+
+def preparar_tabla_chi(tabla):
+    colu = ["d-h", "fo", "fe", "c", "c_acu", "", "", "", ""]
+    for col, nombre_columna in enumerate(colu):
+        tabla.column(column=col, width=100, minwidth=50, anchor='w')
+        tabla.heading(column=col, text=nombre_columna, anchor='w')

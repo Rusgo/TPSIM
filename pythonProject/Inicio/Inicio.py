@@ -1,6 +1,9 @@
 import tkinter as tk
 from tkinter import ttk
 from tkinter import messagebox
+
+from scipy.stats import chi2
+
 import ventanas
 
 
@@ -14,6 +17,21 @@ def abrir():
         ventanas.poissonV(ventana, tablachi)
     elif combo.get() == "Normal":
         ventanas.normalV(ventana, tablachi)
+
+def testChi(error):
+    res = tablachi.get_children()
+    ult = res[-1]
+    valores_ultima_fila = tablachi.item(ult, 'values')
+    chiacu = float(valores_ultima_fila[4])
+    print(len(res)-3)
+    valor_p = 1 - chi2.cdf(chiacu, len(res)-3)
+    nivel_de_significancia = 0.1  # nivel de significancia deseado, por ejemplo 0.05 para un nivel de confianza del 95%
+
+    print("------------------------------------------------------")
+    if valor_p < error:
+        print("Se rechaza la hipótesis nula.")
+    else:
+        print("No se puede rechazar la hipótesis nula.")
 
 
 if __name__ == '__main__':
@@ -47,12 +65,24 @@ if __name__ == '__main__':
     boton = tk.Button(ventana, text="Abrir", command=abrir)
     boton.grid(row=1, column=2)
 
-    #tabla chi cuadrado
-    tablachi = ttk.Treeview(ventana, columns=("Desde-Hasta","Fo","fe","c", "cAcu"))
+    #tabla chi cuadr
+    tablachi = ttk.Treeview(ventana, columns=[str(i) for i in range(9)])
+    for i in range(9):
+        tablachi.heading(i, text="")
+        tablachi.column(i, width=100)
     tablachi.grid(row=2, column=3)
 
     cerrado = tk.Label(ventana, text="")
     tablachi.grid(row=2, column=4)
 
+    errores = ["0.1","0.05", "0.025"]
+    error = ttk.Combobox(ventana, values=errores)
+    error.grid(row=1, column=4)
+
+    tabulado = tk.Button(ventana, text="calcular tabulado" , command=lambda: testChi(float(error.get())))
+    tabulado.grid(row=1, column=5)
+
     # ventana iniciada
     ventana.mainloop()
+
+
