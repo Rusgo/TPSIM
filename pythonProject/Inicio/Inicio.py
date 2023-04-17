@@ -1,7 +1,7 @@
 import tkinter as tk
 from tkinter import ttk
 from tkinter import messagebox
-
+from PIL import Image, ImageTk
 from scipy.stats import chi2
 
 import ventanas
@@ -41,6 +41,7 @@ if __name__ == '__main__':
     ventana.title("Inicio")
     ventana.configure(bg="white")
     ventana.geometry("1980x1080+10+10")
+    ventana.configure()
     # creamos las columnas y filas
     ventana.columnconfigure(0, weight=30)
     ventana.columnconfigure(1, weight=40)
@@ -73,15 +74,16 @@ if __name__ == '__main__':
         tablachi.column(i, width=100)
     tablachi.grid(row=2, column=3)
 
-    cerrado = tk.Label(ventana, text="")
     tablachi.grid(row=2, column=4)
 
+    '''
     errores = ["0.1","0.05", "0.025"]
     error = ttk.Combobox(ventana, values=errores)
     error.grid(row=1, column=4)
 
     tabulado = tk.Button(ventana, text="calcular tabulado" , command=lambda: testChi(float(error.get())))
     tabulado.grid(row=1, column=5)
+    '''
 
     # ventana iniciada
     ventana.mainloop()

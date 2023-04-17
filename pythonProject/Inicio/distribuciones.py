@@ -1,8 +1,8 @@
 import random
 import time
 import math
-from cosas import Intervalos
-from cosas.graficador import graficar
+import Pruebas_Bondad
+from graficador import graficar
 
 
 # realiza los calculos necesarios para pasar un numero a una distrib uniforme y las guarda en una tabla
@@ -12,7 +12,7 @@ def uniforme(n, a, b, clases, tabla):
     for i in range(n):
         res = numUniforme(randoms[i], a, b)
         randoms[i] = res
-    Intervalos.calculo(n, randoms[0], randoms[-1], randoms, clases, False, False, False, 0, tabla)
+    Pruebas_Bondad.calculo(n, randoms[0], randoms[-1], randoms, clases, False, False, False, 0, tabla)
     graficar(n, randoms[0], randoms[-1], randoms, clases, "Uniforme")
 
 
@@ -27,7 +27,7 @@ def exponencial(n, media, clases, tabla):
     numeros = sorted(generarNums(n))
     for i in range(n):
         numeros[i] = numExponencial(numeros[i], media)
-    Intervalos.calculo(n, numeros[0], numeros[-1], numeros, clases, 1/media, False, False, 1, tabla)
+    Pruebas_Bondad.calculo(n, numeros[0], numeros[-1], numeros, clases, 1/media, False, False, 1, tabla)
     graficar(n, numeros[0], numeros[-1], numeros, clases, "Exponencial")
 
 
@@ -71,7 +71,7 @@ def normal(n, media, de, clases, tabla):
     # cambiar = [1.56, 2.21, 3.15, 4.61, 4.18, 5.20, 4.87, 7.71, 5.15, 6.76, 7.28, 4.23, 3.54, 2.75, 4.69, 5.86, 6.25, 4.27, 4.91, 4.78, 2.46, 3.97, 6.09, 6.19, 4.20, 3.48, 5.83, 6.36, 5.90, 5.43, 3.87, 2.21, 3.74, 4.61, 4.18, 5.20, 4.28, 7.71, 5.15, 6.76, 7.28, 4.23, 3.21, 2.75, 4.69, 5.86, 6.25, 4.27, 4.91, 4.78]
     # cambiar.sort()
     #Intervalos.chicuad(n, cambiar[0], cambiar[-1], cambiar, clases, False, 4.7962, 1.4598279, 3, tabla)
-    Intervalos.calculo(n, numeros_random[0], numeros_random[-1], numeros_random, clases, False, media, de, 3, tabla)
+    Pruebas_Bondad.calculo(n, numeros_random[0], numeros_random[-1], numeros_random, clases, False, media, de, 3, tabla)
     graficar(n, numeros_random[0], numeros_random[-1], numeros_random, clases, "Normal")
 
 
@@ -99,7 +99,7 @@ def probExponencial(lambd, marca, desde,hasta):
 
 
 def probUniforme(n, clases):
-    return round(n/clases)
+    return round(1/clases)
 
 
 

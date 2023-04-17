@@ -2,7 +2,7 @@ import math
 from scipy.stats import chi2
 import Inicio
 from Inicio import ventanas
-from cosas import distribuciones
+import distribuciones
 
 def chicuad(n, min, max, listan_numeros, clases, lambd, media, de, funprob, tabla):
     Inicio.ventanas.preparar_tabla_chi(tabla)
@@ -61,7 +61,7 @@ def chicuad(n, min, max, listan_numeros, clases, lambd, media, de, funprob, tabl
 
     valor_p = 1 - chi2.cdf(chiacu, grados_de_libertad)
 
-    nivel_de_significancia = 0.1  # nivel de significancia deseado, por ejemplo 0.05 para un nivel de confianza del 95%
+    nivel_de_significancia = 0.05  # nivel de significancia deseado, por ejemplo 0.05 para un nivel de confianza del 95%
 
     if valor_p < nivel_de_significancia:
         print("Se rechaza la hipótesis nula.")
