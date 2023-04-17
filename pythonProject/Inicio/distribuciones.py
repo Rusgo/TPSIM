@@ -50,6 +50,7 @@ def poisson(lamd, n, clases, tabla):
             x = x + 1
         z.append(x)
     z = sorted(z)
+    Pruebas_Bondad.chi_poisson(n, z, lamd,tabla)
     graficar(n, z[0], z[-1], z, clases, "Poisson")
 
 
@@ -89,8 +90,11 @@ def probNormal(marca, media, de, hasta,desde):
     return res
 
 
-def probPoisson():
-    pass
+def probPoisson(lambd,numero): #(Lambda^D4*EXP(-Lambda))/FACT(D4)
+    factorial = 1
+    for i in range(1, numero + 1):
+        factorial *= i
+    return ((pow(lambd,numero)*math.exp(-lambd))/factorial)
 
 
 def probExponencial(lambd, marca, desde,hasta):

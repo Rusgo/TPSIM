@@ -150,3 +150,45 @@ def tipo(funprob, lambd, desde, hasta, clases, media, de):
         pe = distribuciones.probNormal((desde + hasta) / 2, media, de, hasta, desde)
         grados_de_libertad = clases - 2 - 1  # número de grados de libertad
     return pe, grados_de_libertad
+
+
+def chi_poisson(n, lista, lambd, tabla):
+    x = list(set(lista))
+    x_agrupado = []
+    fo = 0
+    string = ""
+    c = 0
+    c_acu = 0
+    for numero in x:
+        string += str(numero)
+        fo = lista.count(numero)
+        prob = distribuciones.probPoisson(lambd, numero)
+        fe = prob*n
+
+        if fe >= 5:
+            c = pow((fe-fo), 2)/fe
+            c_acu += c
+            # todo esto a la tabla
+            tabla.insert(parent='', index='end', values=(string, fo, fe, c, c_acu))
+            string = "" # reseteo el string y a otro numero
+        elif numero != x[-1]:
+            string += ";"
+        else:
+            res = tabla.get_children()
+            ult = res[-1]
+
+            valores_ultima_fila = tabla.item(ult, 'values')
+
+            fe = float(valores_ultima_fila[2]) + fe
+            fo = float(valores_ultima_fila[1]) + fo
+            chi = pow((fo - fe), 2) / fe
+            chiacu = chi + float(valores_ultima_fila[4])
+            intervalo = valores_ultima_fila[0]
+            tabla.delete(ult)
+            tabla.insert(parent='', index='end', values=(intervalo, fo, fe, chi, chiacu))
+
+
+
+
+
+
