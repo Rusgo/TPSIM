@@ -10,26 +10,26 @@ import ventanas
 # metodo para asignar la ventana al frame
 def abrir():
     if combo.get() == "Uniforme":
-        ventanas.uniformeV(ventana, tablachi)
+        ventanas.uniformeV(ventana, tablachi,tabla_numeros )
     elif combo.get() == "Exponencial":
-        ventanas.exponencialV(ventana, tablachi)
+        ventanas.exponencialV(ventana, tablachi,tabla_numeros )
     elif combo.get() == "Poisson":
-        ventanas.poissonV(ventana, tablachi)
+        ventanas.poissonV(ventana, tablachi,tabla_numeros )
     elif combo.get() == "Normal":
-        ventanas.normalV(ventana, tablachi)
+        ventanas.normalV(ventana, tablachi,tabla_numeros )
 
 
-def testChi(error):
+def testChi(error, tablachi):
     res = tablachi.get_children()
     ult = res[-1]
     valores_ultima_fila = tablachi.item(ult, 'values')
     chiacu = float(valores_ultima_fila[4])
-    print(len(res)-3)
-    valor_p = 1 - chi2.cdf(chiacu, len(res)-3)
+    print(len(res)-2)
+    valor_p = 1 - chi2.cdf(chiacu, len(res)-2)
     nivel_de_significancia = 0.1  # nivel de significancia deseado, por ejemplo 0.05 para un nivel de confianza del 95%
 
     print("------------------------------------------------------")
-    if valor_p < error:
+    if valor_p < 0.05:
         print("Se rechaza la hipótesis nula.")
     else:
         print("No se puede rechazar la hipótesis nula.")
@@ -67,14 +67,17 @@ if __name__ == '__main__':
     boton = tk.Button(ventana, text="Abrir", command=abrir)
     boton.grid(row=1, column=2)
 
+    tabla_numeros = ttk.Treeview(ventana,columns=("1"))
+    tabla_numeros.grid(column=4,row=1)
+
     #tabla chi cuadr
     tablachi = ttk.Treeview(ventana, columns=[str(i) for i in range(9)])
     for i in range(9):
         tablachi.heading(i, text="")
         tablachi.column(i, width=100)
-    tablachi.grid(row=2, column=3)
+    tablachi.grid(row=1, column=3, columnspan=2, rowspan=2)
+    tablachi.grid(row=1, column=3, columnspan=2, rowspan=2)
 
-    tablachi.grid(row=2, column=4)
 
     '''
     errores = ["0.1","0.05", "0.025"]

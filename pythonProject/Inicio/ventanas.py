@@ -8,7 +8,7 @@ is_open = False
 
 
 # ventana que se mostrara dentro del frame de la pantalla de inicio
-def uniformeV(ventana, tabla):
+def uniformeV(ventana, tabla,tabla_numeros ):
     global is_open
     if not is_open:
 
@@ -57,7 +57,7 @@ def uniformeV(ventana, tabla):
                                                                                                    int(numero2.get()),
                                                                                                    int(numero3.get()),
                                                                                                    int(interv.get()),
-                                                                                                   tabla))
+                                                                                                   tabla,tabla_numeros ))
         boton.pack()
 
         # Agregar un botón en la "ventana interna"
@@ -68,7 +68,7 @@ def uniformeV(ventana, tabla):
 
 
 # ventana que se mostrara dentro del frame de la pantalla de inicio
-def exponencialV(ventana,tabla):
+def exponencialV(ventana,tabla,tabla_numeros ):
     global is_open
     if not is_open:
 
@@ -107,7 +107,7 @@ def exponencialV(ventana,tabla):
         boton = tk.Button(internal_frame, text="Calcular",
                           command=lambda: distribuciones.exponencial(int(numero1.get()),
                                                                      int(numero2.get()),
-                                                                     int(interv.get()), tabla))
+                                                                     int(interv.get()), tabla,tabla_numeros ))
         boton.pack()
         # Agregar un botón en la "ventana interna"
         button = tk.Button(internal_frame, text="Cerrar ventana", command=lambda: cerrar(internal_frame))
@@ -116,7 +116,7 @@ def exponencialV(ventana,tabla):
         messagebox.showinfo("info", "Cierre el modelo actual para abrir otro")
 
 
-def poissonV(ventana,tabla):
+def poissonV(ventana,tabla,tabla_numeros ):
     global is_open
     if not is_open:
         is_open = True
@@ -145,16 +145,11 @@ def poissonV(ventana,tabla):
         media = tk.Entry(internal_frame)
         media.pack()
 
-        # cantidad de intervalos adsasdasd
-        res = tk.Label(internal_frame, text="Ingrese Cantidad de intervalos")
-        res.pack()
-        interv = tk.Entry(internal_frame)
-        interv.pack()
+
         # es un boton        v            texto a mostrar                   fun que necesita parametros
         boton = tk.Button(internal_frame, text="Calcular", command=lambda: distribuciones.poisson(int(media.get()),
                                                                                                   int(numerosGenerar.get()),
-                                                                                                  int(interv.get()),
-                                                                                                  tabla))
+                                                                                                  tabla,tabla_numeros ))
         boton.pack()
 
         # Agregar un botón en la "ventana interna"
@@ -164,7 +159,7 @@ def poissonV(ventana,tabla):
         messagebox.showinfo("info", "Cierre el modelo actual para abrir otro")
 
 
-def normalV(ventana,tabla):
+def normalV(ventana,tabla,tabla_numeros ):
     global is_open
     if not is_open:
         is_open = True
@@ -211,7 +206,7 @@ def normalV(ventana,tabla):
             int(numeros_a_generar.get()),
             int(media.get()),
             int(de.get()),
-            int(interv.get()), tabla))
+            int(interv.get()), tabla,tabla_numeros ))
         boton.pack()
 
         table = ttk.Treeview(internal_frame, columns="Numeros")
@@ -238,6 +233,13 @@ def preparar_tabla_ks(tabla):
 
 def preparar_tabla_chi(tabla):
     colu = ["d-h", "fo", "fe", "c", "c_acu", "", "", "", ""]
+    for col, nombre_columna in enumerate(colu):
+        tabla.column(column=col, width=100, minwidth=50, anchor='w')
+        tabla.heading(column=col, text=nombre_columna, anchor='w')
+
+
+def preparar_tabla_chi_poisson(tabla):
+    colu = ["Numeros", "fo", "fe", "c", "c_acu", "", "", "", ""]
     for col, nombre_columna in enumerate(colu):
         tabla.column(column=col, width=100, minwidth=50, anchor='w')
         tabla.heading(column=col, text=nombre_columna, anchor='w')
