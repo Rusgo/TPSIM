@@ -14,17 +14,18 @@ def chicuad(n, min, max, listan_numeros, clases, lambd, media, de, funprob, tabl
     hasta = desde + ancho
     chiacu = 0
     fo = 0
+    fe = 0
 
     for numero in listan_numeros:
         valor = numero
-        if desde <= valor < hasta:
+        if desde <= valor < hasta or max == numero:
             fo += 1
         elif hasta <= valor:
             # hacemos calculo de probabilidad si acuEsperada no llega a 5 no cerramos el intervalo, calculamos c y lo
             # ponemos en la tabla
             prob, grados_de_libertad = tipo(funprob, lambd, desde, hasta, clases, media, de)
             # agrego cosas a la tabla
-            fe = prob * n
+            fe += prob * n
 
             if fe >= 5:
                 intervalo = str(round(desde, 2)) + "-" + str(round(hasta, 2))
@@ -33,18 +34,17 @@ def chicuad(n, min, max, listan_numeros, clases, lambd, media, de, funprob, tabl
                 # desp de cargartodo a la tabla hacer fo 0
                 tabla.insert(parent='', index='end', values=(intervalo, fo, fe, chi, chiacu))
                 fo = 1
+                fe = 0
                 desde = hasta
                 hasta = desde + ancho
             else:
                 hasta += ancho
                 fo += 1
+
     prob, grados_de_libertad = tipo(funprob, lambd, desde, hasta, clases, media, de)
 
     fe = prob*n
-
-    desde = hasta
-    hasta = desde + ancho
-    intervalo=str(desde)+"-"+str(hasta)
+    intervalo = str(round(desde, 2))+"-"+str(round(hasta, 2))
 
     if fe >= 5:
         tabla.insert(parent='', index='end', values=(intervalo, fo, fe, chi, chiacu))
@@ -59,24 +59,21 @@ def chicuad(n, min, max, listan_numeros, clases, lambd, media, de, funprob, tabl
         chi = pow((fo-fe), 2)/fe
         chiacu = chi + float(valores_ultima_fila[4])
         dh = valores_ultima_fila[0].split("-")
-        intervalo = dh[0] + "-" + str(ancho)
+        intervalo = dh[0] + "-" + str(round(hasta, 2))
         tabla.delete(ult)
         tabla.insert(parent='', index='end', values=(intervalo, fo, fe, chi, chiacu))
 
-    valor_p = 1 - chi2.cdf(chiacu, grados_de_libertad)
+'''    valor_p = 1 - chi2.cdf(chiacu, grados_de_libertad)
 
     nivel_de_significancia = 0.05  # nivel de significancia deseado, por ejemplo 0.05 para un nivel de confianza del 95%
 
     if valor_p < nivel_de_significancia:
         print("Se rechaza la hipótesis nula.")
     else:
-        print("No se puede rechazar la hipótesis nula.")
-
-
-
+        print("No se rechaza la hipótesis nula.")
+'''
 
 def ks(n, min, max, listan_numeros, clases, lambd, media, de, funprob, tabla):  # ver si funciona posta o da cualquier verdurta
-
     # cambio el nombre a las columnas por los del metodo ks lo podemos pasar aparte y hacer un if para poner el encabezado de ks o chi cuadrado
     Inicio.ventanas.preparar_tabla_ks(tabla)
 
@@ -118,9 +115,7 @@ def ks(n, min, max, listan_numeros, clases, lambd, media, de, funprob, tabla):  
         elif valor == max:
             fo += 1
 
-    desde = hasta
-    hasta = desde + ancho
-
+    x = (str(round(desde, 2)) + "-" + str(round(hasta, 2)))
     pe, grados_de_libertad = tipo(funprob, lambd, desde, hasta, clases, media, de)
 
     pe_acu += pe
@@ -159,22 +154,51 @@ def tipo(funprob, lambd, desde, hasta, clases, media, de):
 def chi_poisson(n, lista, lambd, tabla):
     Inicio.ventanas.preparar_tabla_chi_poisson(tabla)
     x = list(set(lista))
+    x = sorted(x)
     x_agrupado = []
     fo = 0
     string = ""
     c = 0
     c_acu = 0
-    fe_acu = 0
+    #fe_acu = 0
     fo_acu = 0
+
+    fo = 0
+    fe = 0
+
     for numero in x:
         string += str(numero)
-        fo = lista.count(numero)
+        fo += lista.count(numero)
         prob = distribuciones.probPoisson(lambd, numero)
-        fe = prob*n
+        fe += prob*n
 
-        if fe >= 5 or fe_acu>=5:
+        if fe >= 5:
+            c = pow((fe - fo), 2) / fe
+            c_acu += c
+            tabla.insert(parent='', index='end', values=(string, fo, fe, c, c_acu))
+            fe = 0
+            fo = 0
+            string = ""
 
-            #todo esto a la tabla
+        elif numero != x[-1]:
+            string += ";"
+
+    if fe < 5:
+        res = tabla.get_children()
+        ult = res[-1]
+
+        valores_ultima_fila = tabla.item(ult, 'values')
+
+        fe = float(valores_ultima_fila[2]) + fe
+        fo = float(valores_ultima_fila[1]) + fo
+        chi = pow((fo - fe), 2) / fe
+        chiacu = chi + float(valores_ultima_fila[4])
+        intervalo = valores_ultima_fila[0] + ";" + string
+        tabla.delete(ult)
+        tabla.insert(parent='', index='end', values=(intervalo, fo, fe, chi, chiacu))
+
+
+        '''    #todo esto a la tabla
             if fe_acu == 0:
                 c = pow((fe - fo), 2) / fe
                 c_acu += c
@@ -191,24 +215,27 @@ def chi_poisson(n, lista, lambd, tabla):
             string += ";"
             fe_acu += fe
             fo_acu += fo
-    if fe_acu<5:
+
+
+    if fe_acu < 5 or fe < 5:
         res = tabla.get_children()
         ult = res[-1]
 
         valores_ultima_fila = tabla.item(ult, 'values')
 
-        fe = float(valores_ultima_fila[2]) + fe
-        fo = float(valores_ultima_fila[1]) + fo
+        fe = float(valores_ultima_fila[2]) + fe_acu
+        fo = float(valores_ultima_fila[1]) + fo_acu
         chi = pow((fo - fe), 2) / fe
         chiacu = chi + float(valores_ultima_fila[4])
-        intervalo = valores_ultima_fila[0]
+        intervalo = valores_ultima_fila[0] + ";" + string
         tabla.delete(ult)
         tabla.insert(parent='', index='end', values=(intervalo, fo, fe, chi, chiacu))
-    else:
+    elif fe_acu >= 5:
         c = pow((fe_acu - fo_acu), 2) / fe_acu
         c_acu += c
         tabla.insert(parent='', index='end', values=(string, fo_acu, fe_acu, c, c_acu))
-    testChi(0,tabla)
+        '''
+    testChi(0, tabla)
 
 
 

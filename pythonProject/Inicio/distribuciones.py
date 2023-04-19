@@ -8,7 +8,7 @@ from graficador import graficar, graficar_poisson
 # realiza los calculos necesarios para pasar un numero a una distrib uniforme y las guarda en una tabla
 def uniforme(n, a, b, clases, tabla,tabla_numeros):
     tabla.delete(*tabla.get_children())
-    tabla_numeros.delete(*tabla.get_children())
+    tabla_numeros.delete(*tabla_numeros.get_children())
     randoms = sorted(generarNums(n))
     for i in range(n):
         res = numUniforme(randoms[i], a, b)
@@ -26,7 +26,7 @@ def numUniforme(valor, a, b):
 # lo mismo que arriba pero con otra distrib
 def exponencial(n, media, clases, tabla,tabla_numeros ):
     tabla.delete(*tabla.get_children())
-    tabla_numeros.delete(*tabla.get_children())
+    tabla_numeros.delete(*tabla_numeros.get_children())
     numeros = sorted(generarNums(n))
     for i in range(n):
         numeros[i] = numExponencial(numeros[i], media)
@@ -43,7 +43,7 @@ def numExponencial(numero, media):
 # Usamos algoritmo dado por el profesor y lo utilizamos las veces deseadas por el profesor
 def poisson(lamd, n, tabla,tabla_numeros):
     tabla.delete(*tabla.get_children())
-    tabla_numeros.delete(*tabla.get_children())
+    tabla_numeros.delete(*tabla_numeros.get_children())
     z = []
     for i in range(n):
         p = 1
@@ -54,16 +54,18 @@ def poisson(lamd, n, tabla,tabla_numeros):
             p = p * u
             x = x + 1
         z.append(x)
-        tabla_numeros.insert(parent='', index='end', values=str(x))
+
     z = sorted(z)
-    Pruebas_Bondad.chi_poisson(n, z, lamd,tabla)
+    for numero in z:
+        tabla_numeros.insert(parent='', index='end', values=str(numero))
+    Pruebas_Bondad.chi_poisson(n, z, lamd, tabla)
     graficar_poisson(n, z[0], z[-1], z, "Poisson")
 
 
 # usamos el metodo box muller para obtener los numero, alternamos n1 y n2 segun si es par i o no
 def normal(n, media, de, clases, tabla,tabla_numeros):
     tabla.delete(*tabla.get_children())
-    tabla_numeros.delete(*tabla.get_children())
+    tabla_numeros.delete(*tabla_numeros.get_children())
     numeros_random = []
     for i in range(n):
         rnd1 = generarNums(1)
