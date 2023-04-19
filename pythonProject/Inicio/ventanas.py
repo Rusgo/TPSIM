@@ -8,7 +8,7 @@ is_open = False
 
 
 # ventana que se mostrara dentro del frame de la pantalla de inicio
-def uniformeV(ventana, tabla,tabla_numeros ):
+def uniformeV(ventana, tabla,tabla_numeros, resultadoBondad, tab):
     global is_open
     if not is_open:
 
@@ -57,18 +57,18 @@ def uniformeV(ventana, tabla,tabla_numeros ):
                                                                                                    int(numero2.get()),
                                                                                                    int(numero3.get()),
                                                                                                    int(interv.get()),
-                                                                                                   tabla,tabla_numeros ))
+                                                                                                   tabla,tabla_numeros,resultadoBondad ))
         boton.pack()
 
         # Agregar un botón en la "ventana interna"
-        button = tk.Button(internal_frame, text="Cerrar ventana", command=lambda: cerrar(internal_frame))
+        button = tk.Button(internal_frame, text="Cerrar ventana", command=lambda: cerrar(internal_frame,tabla,tab))
         button.pack(pady=10)
     else:
         messagebox.showinfo("info", "Cierre el modelo actual para abrir otro")
 
 
 # ventana que se mostrara dentro del frame de la pantalla de inicio
-def exponencialV(ventana,tabla,tabla_numeros ):
+def exponencialV(ventana,tabla,tabla_numeros,resultadoBondad,tab):
     global is_open
     if not is_open:
 
@@ -107,16 +107,16 @@ def exponencialV(ventana,tabla,tabla_numeros ):
         boton = tk.Button(internal_frame, text="Calcular",
                           command=lambda: distribuciones.exponencial(int(numero1.get()),
                                                                      int(numero2.get()),
-                                                                     int(interv.get()), tabla,tabla_numeros ))
+                                                                     int(interv.get()), tabla,tabla_numeros,resultadoBondad ))
         boton.pack()
         # Agregar un botón en la "ventana interna"
-        button = tk.Button(internal_frame, text="Cerrar ventana", command=lambda: cerrar(internal_frame))
+        button = tk.Button(internal_frame, text="Cerrar ventana", command=lambda: cerrar(internal_frame,tabla,tab))
         button.pack(pady=10)
     else:
         messagebox.showinfo("info", "Cierre el modelo actual para abrir otro")
 
 
-def poissonV(ventana,tabla,tabla_numeros ):
+def poissonV(ventana,tabla,tabla_numeros,resultadoBondad ):
     global is_open
     if not is_open:
         is_open = True
@@ -149,17 +149,17 @@ def poissonV(ventana,tabla,tabla_numeros ):
         # es un boton        v            texto a mostrar                   fun que necesita parametros
         boton = tk.Button(internal_frame, text="Calcular", command=lambda: distribuciones.poisson(int(media.get()),
                                                                                                   int(numerosGenerar.get()),
-                                                                                                  tabla,tabla_numeros ))
+                                                                                                  tabla,tabla_numeros ,resultadoBondad))
         boton.pack()
 
         # Agregar un botón en la "ventana interna"
-        button = tk.Button(internal_frame, text="Cerrar ventana", command=lambda: cerrar(internal_frame))
+        button = tk.Button(internal_frame, text="Cerrar ventana", command=lambda: cerrar(internal_frame,tabla,tab))
         button.pack(pady=10)
     else:
         messagebox.showinfo("info", "Cierre el modelo actual para abrir otro")
 
 
-def normalV(ventana,tabla,tabla_numeros ):
+def normalV(ventana,tabla,tabla_numeros,resultadoBondad,tab ):
     global is_open
     if not is_open:
         is_open = True
@@ -206,25 +206,35 @@ def normalV(ventana,tabla,tabla_numeros ):
             int(numeros_a_generar.get()),
             int(media.get()),
             int(de.get()),
-            int(interv.get()), tabla,tabla_numeros ))
+            int(interv.get()), tabla,tabla_numeros,resultadoBondad ))
         boton.pack()
 
         table = ttk.Treeview(internal_frame, columns="Numeros")
 
         # Agregar un botón en la "ventana interna"
-        button = tk.Button(internal_frame, text="Cerrar ventana", command=lambda: cerrar(internal_frame))
+        button = tk.Button(internal_frame, text="Cerrar ventana", command=lambda: cerrar(internal_frame,tabla,tab))
         button.pack(pady=10)
     else:
         messagebox.showinfo("info", "Cierre el modelo actual para abrir otro")
 
 
-def cerrar(i):
+def cerrar(i, tabla, tabla_n):
+    tabla.delete(*tabla.get_children())
+    tabla_n.delete(*tabla_n.get_children())
+    colu = ["", "", "", "", "", "", "", "", ""]
+    tabla.column(column="#0", width=100, minwidth=50, anchor='w')
+    tabla.heading(column="#0", text="vacio", anchor='w')
+    for col, nombre_columna in enumerate(colu):
+        tabla.column(column=col, width=100, minwidth=50, anchor='w')
+        tabla.heading(column=col, text=nombre_columna, anchor='w')
     i.destroy()
     global is_open
     is_open = False
 
 
 def preparar_tabla_ks(tabla):
+    tabla.column(column="#0", width=100, minwidth=50, anchor='w')
+    tabla.heading(column="#0", text="Prueba KS", anchor='w')
     colu = ["d-h", "fo", "fe", "po", "pe", "poacu", "peacu", "dif", "max"]
     for col, nombre_columna in enumerate(colu):
         tabla.column(column=col, width=100, minwidth=50, anchor='w')
@@ -232,6 +242,8 @@ def preparar_tabla_ks(tabla):
 
 
 def preparar_tabla_chi(tabla):
+    tabla.column(column="#0", width=100, minwidth=50, anchor='w')
+    tabla.heading(column="#0", text="Prueba chi2", anchor='w')
     colu = ["d-h", "fo", "fe", "c", "c_acu", "", "", "", ""]
     for col, nombre_columna in enumerate(colu):
         tabla.column(column=col, width=100, minwidth=50, anchor='w')
@@ -239,6 +251,8 @@ def preparar_tabla_chi(tabla):
 
 
 def preparar_tabla_chi_poisson(tabla):
+    tabla.column(column="#0", width=100, minwidth=50, anchor='w')
+    tabla.heading(column="#0", text="Prueba chi2", anchor='w')
     colu = ["Numeros", "fo", "fe", "c", "c_acu", "", "", "", ""]
     for col, nombre_columna in enumerate(colu):
         tabla.column(column=col, width=100, minwidth=50, anchor='w')

@@ -1,38 +1,18 @@
 import tkinter as tk
 from tkinter import ttk
-from tkinter import messagebox
-from PIL import Image, ImageTk
-from scipy.stats import chi2
-
 import ventanas
 
 
 # metodo para asignar la ventana al frame
 def abrir():
     if combo.get() == "Uniforme":
-        ventanas.uniformeV(ventana, tablachi,tabla_numeros )
+        ventanas.uniformeV(ventana, tablachi,tabla_numeros,resultadoBondad,tabla_numeros )
     elif combo.get() == "Exponencial":
-        ventanas.exponencialV(ventana, tablachi,tabla_numeros )
+        ventanas.exponencialV(ventana, tablachi,tabla_numeros,resultadoBondad,tabla_numeros )
     elif combo.get() == "Poisson":
-        ventanas.poissonV(ventana, tablachi,tabla_numeros )
+        ventanas.poissonV(ventana, tablachi,tabla_numeros,resultadoBondad,tabla_numeros )
     elif combo.get() == "Normal":
-        ventanas.normalV(ventana, tablachi,tabla_numeros )
-
-
-def testChi(error, tablachi):
-    res = tablachi.get_children()
-    ult = res[-1]
-    valores_ultima_fila = tablachi.item(ult, 'values')
-    chiacu = float(valores_ultima_fila[4])
-    print(len(res)-2)
-    valor_p = 1 - chi2.cdf(chiacu, len(res)-2)
-    nivel_de_significancia = 0.1  # nivel de significancia deseado, por ejemplo 0.05 para un nivel de confianza del 95%
-
-    print("------------------------------------------------------")
-    if valor_p < 0.05:
-        print("Se rechaza la hipótesis nula.")
-    else:
-        print("No se puede rechazar la hipótesis nula.")
+        ventanas.normalV(ventana, tablachi,tabla_numeros,resultadoBondad,tabla_numeros )
 
 
 if __name__ == '__main__':
@@ -67,7 +47,7 @@ if __name__ == '__main__':
     boton = tk.Button(ventana, text="Abrir", command=abrir)
     boton.grid(row=1, column=2)
 
-    tabla_numeros = ttk.Treeview(ventana,columns=("1"))
+    tabla_numeros = ttk.Treeview(ventana, columns=("1"))
     tabla_numeros.grid(column=4,row=1)
 
     #tabla chi cuadr
@@ -79,14 +59,11 @@ if __name__ == '__main__':
     tablachi.grid(row=1, column=3, columnspan=2, rowspan=2)
 
 
-    '''
-    errores = ["0.1","0.05", "0.025"]
-    error = ttk.Combobox(ventana, values=errores)
-    error.grid(row=1, column=4)
 
-    tabulado = tk.Button(ventana, text="calcular tabulado" , command=lambda: testChi(float(error.get())))
-    tabulado.grid(row=1, column=5)
-    '''
+
+    resultadoBondad = tk.Label(ventana, text="")
+
+
 
     # ventana iniciada
     ventana.mainloop()

@@ -3,10 +3,11 @@ from scipy.stats import chi2
 import Inicio
 from Inicio import ventanas
 import distribuciones
-from Inicio import testChi
+from scipy import  stats
+from tkinter import messagebox
 
 
-def chicuad(n, min, max, listan_numeros, clases, lambd, media, de, funprob, tabla):
+def chicuad(n, min, max, listan_numeros, clases, lambd, media, de, funprob, tabla, resultadoBondad):
     Inicio.ventanas.preparar_tabla_chi(tabla)
     clases = int(pow(n, 1/2))
     ancho = (max - min) / clases
@@ -23,7 +24,7 @@ def chicuad(n, min, max, listan_numeros, clases, lambd, media, de, funprob, tabl
         elif hasta <= valor:
             # hacemos calculo de probabilidad si acuEsperada no llega a 5 no cerramos el intervalo, calculamos c y lo
             # ponemos en la tabla
-            prob, grados_de_libertad = tipo(funprob, lambd, desde, hasta, clases, media, de)
+            prob = tipo(funprob, lambd, desde, hasta, clases, media, de)
             # agrego cosas a la tabla
             fe += prob * n
 
@@ -41,17 +42,16 @@ def chicuad(n, min, max, listan_numeros, clases, lambd, media, de, funprob, tabl
                 hasta += ancho
                 fo += 1
 
-    prob, grados_de_libertad = tipo(funprob, lambd, desde, hasta, clases, media, de)
+    prob = tipo(funprob, lambd, desde, hasta, clases, media, de)
 
     fe = prob*n
     intervalo = str(round(desde, 2))+"-"+str(round(hasta, 2))
-
     if fe >= 5:
         tabla.insert(parent='', index='end', values=(intervalo, fo, fe, chi, chiacu))
     else:
+        res = tabla.get_children()
         # last_row_index = tabla.index(tabla.get_children()[-1])
         # res = tabla.item(last_row_index, 'values')
-        res = tabla.get_children()
         ult = res[-1]
         valores_ultima_fila = tabla.item(ult, 'values')
         fe = float(valores_ultima_fila[2]) + fe
@@ -62,18 +62,25 @@ def chicuad(n, min, max, listan_numeros, clases, lambd, media, de, funprob, tabl
         intervalo = dh[0] + "-" + str(round(hasta, 2))
         tabla.delete(ult)
         tabla.insert(parent='', index='end', values=(intervalo, fo, fe, chi, chiacu))
-
-'''    valor_p = 1 - chi2.cdf(chiacu, grados_de_libertad)
-
-    nivel_de_significancia = 0.05  # nivel de significancia deseado, por ejemplo 0.05 para un nivel de confianza del 95%
-
-    if valor_p < nivel_de_significancia:
-        print("Se rechaza la hipótesis nula.")
+    final = tabla.get_children()
+    if funprob == 0:
+        grados_libertad = len(final) -1
+    elif funprob == 1 or funprob == 2:
+        grados_libertad = len(final) - 2
     else:
-        print("No se rechaza la hipótesis nula.")
-'''
+        grados_libertad = len(final) - 3
 
-def ks(n, min, max, listan_numeros, clases, lambd, media, de, funprob, tabla):  # ver si funciona posta o da cualquier verdurta
+    valor_tabulado = stats.chi2.ppf(0.95, grados_libertad)
+    print(valor_tabulado)
+    if valor_tabulado < chiacu:
+        texto = "Se rechaza la hipótesis nula.\n"
+    else:
+        texto = "No se rechaza la hipótesis nula.\n"
+    texto += "Valor calculado: " + str(chiacu) + "\nValor tabulado: " + str(valor_tabulado)
+    messagebox.showinfo("Resultado prueba de bondad", texto)
+    print(grados_libertad)
+
+def ks(n, min, max, listan_numeros, clases, lambd, media, de, funprob, tabla, resultadoBondad):  # ver si funciona posta o da cualquier verdurta
     # cambio el nombre a las columnas por los del metodo ks lo podemos pasar aparte y hacer un if para poner el encabezado de ks o chi cuadrado
     Inicio.ventanas.preparar_tabla_ks(tabla)
 
@@ -95,7 +102,7 @@ def ks(n, min, max, listan_numeros, clases, lambd, media, de, funprob, tabla):  
         if desde <= valor < hasta:
             fo += 1
         elif hasta <= valor != max:
-            pe, grados_de_libertad = tipo(funprob, lambd, desde, hasta, clases, media, de) # los if repetidos 20 veces en un metodo
+            pe = tipo(funprob, lambd, desde, hasta, clases, media, de) # los if repetidos 20 veces en un metodo
             x = (str(round(desde, 2)) + "-" + str(round(hasta, 2)))
             # calculamos lo necesario para obtener el resultado de la ks
             pe_acu += pe
@@ -116,7 +123,7 @@ def ks(n, min, max, listan_numeros, clases, lambd, media, de, funprob, tabla):  
             fo += 1
 
     x = (str(round(desde, 2)) + "-" + str(round(hasta, 2)))
-    pe, grados_de_libertad = tipo(funprob, lambd, desde, hasta, clases, media, de)
+    pe = tipo(funprob, lambd, desde, hasta, clases, media, de)
 
     pe_acu += pe
     po = fo / n
@@ -128,30 +135,36 @@ def ks(n, min, max, listan_numeros, clases, lambd, media, de, funprob, tabla):  
 
     tabla.insert(parent='', index='end', values=(x, fo, str(pe*n), po, pe, po_acu, pe_acu, res, maximo))
 
-
-def calculo(n, min, max, listan_numeros, clases, lambd, media, de, funprob, tabla):
-    if n <= 30:
-        ks(n, min, max, listan_numeros, clases, lambd, media, de, funprob, tabla)
+    valor_tabulado = stats.kstwo.ppf(0.95, n)
+    print(valor_tabulado)
+    if valor_tabulado < maximo:
+        texto = "Se rechaza la hipótesis nula.\n"
     else:
-        chicuad(n, min, max, listan_numeros, clases, lambd, media, de, funprob, tabla)
+        texto = "No se rechaza la hipótesis nula.\n"
+    texto += "Valor calculado: " + str(maximo) + "\nValor tabulado: " + str(valor_tabulado)
+    messagebox.showinfo("Resultado prueba de bondad", texto)
+
+
+def calculo(n, min, max, listan_numeros, clases, lambd, media, de, funprob, tabla, resultadoBondad):
+    if n <= 30:
+        ks(n, min, max, listan_numeros, clases, lambd, media, de, funprob, tabla, resultadoBondad)
+    else:
+        chicuad(n, min, max, listan_numeros, clases, lambd, media, de, funprob, tabla, resultadoBondad)
 
 
 def tipo(funprob, lambd, desde, hasta, clases, media, de):
     if funprob == 0:
         pe = 1/clases
-        grados_de_libertad = clases - 0 - 1  # número de grados de libertad
     elif funprob == 1:
         pe = distribuciones.probExponencial(lambd, (desde + hasta) / 2, desde, hasta)
-        grados_de_libertad = clases - 1 - 1  # número de grados de libertad
     elif funprob == 2:
         pe = distribuciones.probPoisson()
     elif funprob == 3:
         pe = distribuciones.probNormal((desde + hasta) / 2, media, de, hasta, desde)
-        grados_de_libertad = clases - 2 - 1  # número de grados de libertad
-    return pe, grados_de_libertad
+    return pe
 
 
-def chi_poisson(n, lista, lambd, tabla):
+def chi_poisson(n, lista, lambd, tabla,resultadoBondad):
     Inicio.ventanas.preparar_tabla_chi_poisson(tabla)
     x = list(set(lista))
     x = sorted(x)
@@ -196,46 +209,17 @@ def chi_poisson(n, lista, lambd, tabla):
         intervalo = valores_ultima_fila[0] + ";" + string
         tabla.delete(ult)
         tabla.insert(parent='', index='end', values=(intervalo, fo, fe, chi, chiacu))
+    final = tabla.get_children()
+    grados_libertad = len(final) - 2
+    valor_tabulado = stats.chi2.ppf(0.95, grados_libertad)
+    print(valor_tabulado)
+    if valor_tabulado < chiacu:
+        texto = "Se rechaza la hipótesis nula.\n"
+    else:
+        texto = "No se rechaza la hipótesis nula.\n"
+    texto += "Valor calculado: " + str(chiacu) + "\nValor tabulado: " + str(valor_tabulado)
+    messagebox.showinfo("Resultado prueba de bondad", texto)
 
-
-        '''    #todo esto a la tabla
-            if fe_acu == 0:
-                c = pow((fe - fo), 2) / fe
-                c_acu += c
-                tabla.insert(parent='', index='end', values=(string, fo, fe, c, c_acu))
-            else:
-                c = pow((fe_acu - fo_acu), 2) / fe_acu
-                c_acu += c
-                tabla.insert(parent='', index='end', values=(string, fo_acu, fe_acu, c, c_acu))
-                fe_acu = 0
-                fo_acu = 0
-
-            string = "" # reseteo el string y a otro numero
-        elif numero != x[-1]:
-            string += ";"
-            fe_acu += fe
-            fo_acu += fo
-
-
-    if fe_acu < 5 or fe < 5:
-        res = tabla.get_children()
-        ult = res[-1]
-
-        valores_ultima_fila = tabla.item(ult, 'values')
-
-        fe = float(valores_ultima_fila[2]) + fe_acu
-        fo = float(valores_ultima_fila[1]) + fo_acu
-        chi = pow((fo - fe), 2) / fe
-        chiacu = chi + float(valores_ultima_fila[4])
-        intervalo = valores_ultima_fila[0] + ";" + string
-        tabla.delete(ult)
-        tabla.insert(parent='', index='end', values=(intervalo, fo, fe, chi, chiacu))
-    elif fe_acu >= 5:
-        c = pow((fe_acu - fo_acu), 2) / fe_acu
-        c_acu += c
-        tabla.insert(parent='', index='end', values=(string, fo_acu, fe_acu, c, c_acu))
-        '''
-    testChi(0, tabla)
 
 
 
