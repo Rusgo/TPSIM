@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 
 
-# Realiza los calculos necesarios para hacer el grafico y los muestra
+# Realiza los cálculos necesarios para hacer el grafico y los muestra
 def graficar(n, min, max, listan_numeros, clases, distri):
     # clases = int(pow(n, 1/2))
     ancho = (max-min)/clases
@@ -10,7 +10,6 @@ def graficar(n, min, max, listan_numeros, clases, distri):
     x = []
     y = []
     c = 0
-    intervalos_salteados = 0
     x.append(str(round(desde, 2)) + "-" + str(round(hasta, 2)))
     for numero in listan_numeros:
         valor = numero

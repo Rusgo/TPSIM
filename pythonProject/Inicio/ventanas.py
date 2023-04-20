@@ -1,7 +1,6 @@
 import tkinter as tk
 from tkinter import ttk
 from tkinter import messagebox
-import Inicio
 import distribuciones
 select = "media"
 is_open = False
@@ -266,7 +265,7 @@ def cerrar(i, tabla, tabla_n):
     tabla_n.delete(*tabla_n.get_children())
     colu = ["", "", "", "", "", "", "", "", ""]
     tabla.column(column="#0", width=100, minwidth=50, anchor='w')
-    tabla.heading(column="#0", text="vacio", anchor='w')
+    tabla.heading(column="#0", text="", anchor='w')
     for col, nombre_columna in enumerate(colu):
         tabla.column(column=col, width=100, minwidth=50, anchor='w')
         tabla.heading(column=col, text=nombre_columna, anchor='w')
