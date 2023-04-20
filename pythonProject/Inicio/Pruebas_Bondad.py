@@ -208,6 +208,7 @@ def chi_poisson(n, lista, lambd, tabla,resultadoBondad):
         chiacu = chi + float(valores_ultima_fila[4])
         intervalo = valores_ultima_fila[0] + ";" + string
         tabla.delete(ult)
+
         tabla.insert(parent='', index='end', values=(intervalo, fo, fe, chi, chiacu))
     final = tabla.get_children()
     grados_libertad = len(final) - 2
@@ -219,8 +220,3 @@ def chi_poisson(n, lista, lambd, tabla,resultadoBondad):
         texto = "No se rechaza la hipótesis nula.\n"
     texto += "Valor calculado: " + str(chiacu) + "\nValor tabulado: " + str(valor_tabulado)
     messagebox.showinfo("Resultado prueba de bondad", texto)
-
-
-
-
-
