@@ -14,15 +14,17 @@ class Registro:
         self.nro_llamada = 0
 
 
-def inicio(media, de, horas):
+def inicio(media, de, horas, desde, tablaintervalo, tablafinal):
+    tablaintervalo.delete(*tablaintervalo.get_children())
+    tablafinal.delete(*tablafinal.get_children())
     llamada_actual = []
     llamada_anterior = []
     con_acu = Registro()
+    hasta = desde + 500
     primera_fila = []
     ultima_fila = []
     res = ["-"]*8
     a = ["rnda", "a", "rndg", "g", "rndcombra", "si/no", "rndg", "gasto"]
-    print(a)
     for i in range(horas):
         if i % 2 == 0:
             n1, n2 = normal.normal(media, de)
@@ -30,25 +32,26 @@ def inicio(media, de, horas):
                 con_acu.nro_llamada += 1
                 res = montecarlo(con_acu)
                 llamada_anterior = llamada_actual
-                llamada_actual = [con_acu.nro_llamada, res[0], res[1], res[2], res[3], res[4], res[5], res[6], res[7]
+                llamada_actual = [str(i+1), con_acu.nro_llamada, res[0], res[1], res[2], res[3], res[4], res[5], res[6], res[7]
                                   , con_acu.atendidos_c, con_acu.ventas_c, con_acu.hombres_c, con_acu.hombres_gastos,
                                   con_acu.mujeres_c, con_acu.mujeres_gastos, con_acu.ingreso_total]
-                print(llamada_actual)
-
+                if desde <= con_acu.nro_llamada <= hasta:
+                    tablaintervalo.insert(parent='', index='end', values=llamada_actual)
         else:
             for j in range(int(n2)):
                 con_acu.nro_llamada += 1
                 res = montecarlo(con_acu)
                 llamada_anterior = llamada_actual
-                llamada_actual = [con_acu.nro_llamada, res[0], res[1], res[2], res[3], res[4], res[5], res[6], res[7]
+                llamada_actual = [str(i+1), con_acu.nro_llamada, res[0], res[1], res[2], res[3], res[4], res[5], res[6], res[7]
                                   , con_acu.atendidos_c, con_acu.ventas_c, con_acu.hombres_c, con_acu.hombres_gastos,
                                   con_acu.mujeres_c, con_acu.mujeres_gastos, con_acu.ingreso_total]
-                print(llamada_actual)
+                if desde <= con_acu.nro_llamada <= hasta:
+                    tablaintervalo.insert(parent='', index='end', values=llamada_actual)
+    tablafinal.insert(parent='', index='end',values=llamada_actual)
 
 
 def montecarlo(reg):
     resultado = ["-"]*8  # ["rnda", "a", "rndg", "g", "rndcombra", "si/no", "rndg", "gasto"]
-    print(resultado)
     atiende_var, resultado[0] = atiende()
     if atiende_var:
         reg.atendidos_c += 1
