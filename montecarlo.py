@@ -1,5 +1,6 @@
 import normal
 import random
+import time
 
 
 class Registro:
@@ -15,6 +16,7 @@ class Registro:
 
 
 def inicio(media, de, horas, desde, tablaintervalo, tablafinal):
+    start_time = time.time()  # Registra el tiempo de inicio
     tablaintervalo.delete(*tablaintervalo.get_children())
     tablafinal.delete(*tablafinal.get_children())
     llamada_actual = []
@@ -47,7 +49,18 @@ def inicio(media, de, horas, desde, tablaintervalo, tablafinal):
                                   con_acu.mujeres_c, con_acu.mujeres_gastos, con_acu.ingreso_total]
                 if desde <= con_acu.nro_llamada <= hasta:
                     tablaintervalo.insert(parent='', index='end', values=llamada_actual)
-    tablafinal.insert(parent='', index='end',values=llamada_actual)
+    tablafinal.insert(parent='', index='end', values=llamada_actual)
+
+
+
+
+
+    end_time = time.time()  # Registra el tiempo de finalización
+
+    elapsed_time = end_time - start_time  # Calcula el tiempo transcurrido
+
+    print(f"La función tardó {elapsed_time:.2f} segundos en ejecutarse")
+    return llamada_actual
 
 
 def montecarlo(reg):
