@@ -1,3 +1,4 @@
+
 import random
 from Servidores.cola import Cola
 from Servidores.emplead import Empleado
@@ -5,8 +6,36 @@ from Servidores.empleado_reparacion import EmpleadoReparacion
 from Clientes.cliente import Cliente
 from Clientes.aparato_electrodomestico import Aparato
 from distribuciones import numExponencial
+import time
 
 
+
+def mandar_a_reparacion(fin_atencion_empleado_1, fin_atencion_empleado_2, empleado_anterior):
+    tiempo_demora_reparacion, rnd_reparacion = numExponencial(media_atencion_reparacion)
+    if emp_reparacion_1.es_libre() and emp_reparacion_2.es_libre():
+        tiempo_demora_reparacion *= 0.5
+        fin_atencion_empleado_1 = tiempo_demora_reparacion + reloj
+        emp_reparacion_1.ocupar(empleado_anterior.atendiendo_a)
+        emp_reparacion_2.ayudar()
+        emp_reparacion_1.atendiendo_a.estado = "Esperando aparato"
+        emp_reparacion_1.atendiendo_a.aparato_electrodomestico.iniciar_reparacion(reloj)
+
+    elif emp_reparacion_1.esta_ayudando():
+        fin_atencion_empleado_2 = (fin_atencion_empleado_2 - reloj) / 0.5 + reloj
+        fin_atencion_empleado_1 = tiempo_demora_reparacion + reloj
+        emp_reparacion_1.ocupar(empleado_anterior.atendiendo_a)
+        emp_reparacion_1.atendiendo_a.estado = "Esperando aparato"
+        emp_reparacion_1.atendiendo_a.aparato_electrodomestico.iniciar_reparacion(reloj)
+
+    elif emp_reparacion_2.esta_ayudando():
+        fin_atencion_empleado_1 = (fin_atencion_empleado_1 - reloj) / 0.5 + reloj
+        fin_atencion_empleado_2 = tiempo_demora_reparacion + reloj
+        emp_reparacion_2.ocupar(empleado_anterior.atendiendo_a)
+        emp_reparacion_2.atendiendo_a.estado = "Esperando aparato"
+        emp_reparacion_2.atendiendo_a.aparato_electrodomestico.iniciar_reparacion(reloj)
+    else:
+        tiempo_demora_reparacion = rnd_reparacion = ""
+    return fin_atencion_empleado_1, fin_atencion_empleado_2, tiempo_demora_reparacion, rnd_reparacion
 def obtener_minimo(a, b, c, d, e, f):
     variables = locals()  # Obtener diccionario con los nombres y valores de las variables
     minimo = min(variables.values())  # Obtener el valor mínimo
@@ -18,13 +47,16 @@ def obtener_minimo(a, b, c, d, e, f):
 
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
+    # Inicio temporizador
+    inicio = time.time()
+
     # Desde cuál hasta cuál mostrar
 
     # Parámetros para distribuciones
     media_llegada_clientes = 15
     media_atencion_recepcion = 3
     media_atencion_reparacion = 20
-    mediap_atencion_inspeccion = 5
+    media_atencion_inspeccion = 5
     media_atencion_cobro = 5
 
     # Cantidad de simulaciones
@@ -61,7 +93,7 @@ if __name__ == '__main__':
     estado1 = emp_reparacion_1.estado
     estado2 = emp_reparacion_2.estado
     cola_en_reparacion = len(cola_reparacion.cola)
-    # Empleado Insprección
+    # Empleado Inspección
     estado_inspeccion, cola_inspeccion = emp_inspeccion.mostrar_info()
     # Empleado Cobro
     estado_cobro, cola_cobro = emp_cobro.mostrar_info()
@@ -76,10 +108,20 @@ if __name__ == '__main__':
               estado_inspeccion, cola_inspeccion, estado_cobro, cola_cobro, contador_tres_fases, contador_atendidos, contador_volvieron_a_reparacion, contador_demoraron_mas30_en_fase,
               ac_tiempo_demora_reparacion, ac_tiempo_demora_de_los_que_no_esperaron]
 
+    # Podría borrarse, se declara en cada iteración del FOR
     proximos = {'Llegada cliente': vector[4], 'Fin atención recepción': vector[7], 'Fin atención reparación empleado 1': vector[10], 'Fin atención reparación empleado 2': vector[11], 'Fin atención inspección': vector[14], 'Fin atención cobro': vector[19]}
     llaves = 'Llegada cliente', 'Fin atención recepción', 'Fin atención reparación empleado 1', 'Fin atención reparación empleado 2', 'Fin atención inspección','Fin atención cobro'
     indices = 4, 7, 10, 11, 14, 19
     for i in range(num_sim):
+        vector_ant = [evento, reloj, rnd_llegada_cliente, tiempo_entre_llegada_cliente, proxima_llegada_cliente,
+                      rnd_fin_recepcion, tiempo_demora_recepcion, fin_atencion_recepcion,
+                      rnd_reparacion, tiempo_demora_reparacion, fin_atencion_empleado_1, fin_atencion_empleado_2,
+                      rnd_inspeccion, tiempo_demora_inspeccion, fin_atencion_inspeccion,
+                      rnd_fallos, hay_fallas, rnd_fin_atencion_cobro, tiempo_demora_cobro, fin_atencion_cobro,
+                      estado_recepcion, cola_recepcion, estado1, estado2, cola_en_reparacion,
+                      estado_inspeccion, cola_inspeccion, estado_cobro, cola_cobro, contador_tres_fases, contador_atendidos,
+                      contador_volvieron_a_reparacion, contador_demoraron_mas30_en_fase,
+                      ac_tiempo_demora_reparacion, ac_tiempo_demora_de_los_que_no_esperaron]
         proximos = {}
         for j in range(5):
             if str(vector[indices[j]]) != "":
@@ -87,6 +129,7 @@ if __name__ == '__main__':
 
         minimo = min(proximos.values())
         for nombre, valor in proximos.items():
+
             if valor == minimo:
                 reloj, evento = minimo, nombre
                 break
@@ -109,33 +152,15 @@ if __name__ == '__main__':
                 cliente = Cliente(aparato, "Esperando recepcion")
                 emp_recepcion.cola_empleado.agregar(cliente)
                 cola_recepcion = len(emp_recepcion.cola_empleado)
+                tiempo_entre_llegada_cliente = rnd_llegada_cliente = ""
+
+
+# HACE FALTA VACIAR LOS CAMPOS RND Y EL TIEMPO DEMORA CUANDO NO SE RECALCULAN
+# REESCRIBIR LOS TEXTOS DE LOS ESTADOS DE LOS EMPLEADOS CUANDO NO HAY NADIE EN LA COLA Y EL EVENTO ES FIN ATENCIÓN
 
         # Evento fin_atencion_recepcion
         elif evento == 'Fin atención recepción':
-            tiempo_demora_reparacion, rnd_reparacion = numExponencial(media_atencion_reparacion)
-            if emp_reparacion_1.es_libre() and emp_reparacion_2.es_libre():
-                tiempo_demora_reparacion *= 0.5
-                fin_atencion_empleado_1 = tiempo_demora_reparacion + reloj
-                emp_reparacion_1.ocupar(emp_recepcion.atendiendo_a)
-                emp_reparacion_2.ayudar()
-                emp_reparacion_1.atendiendo_a.estado = "Esperando aparato"
-                emp_reparacion_1.atendiendo_a.aparato_electrodomestico.iniciar_reparacion(reloj)
-
-            elif emp_reparacion_1.esta_ayudando():
-                fin_atencion_empleado_2 = (fin_atencion_empleado_2 - reloj) / 0.5 + reloj
-                fin_atencion_empleado_1 = tiempo_demora_reparacion + reloj
-                emp_reparacion_1.ocupar(emp_recepcion.atendiendo_a)
-                emp_reparacion_1.atendiendo_a.estado = "Esperando aparato"
-                emp_reparacion_1.atendiendo_a.aparato_electrodomestico.iniciar_reparacion(reloj)
-
-            elif emp_reparacion_2.esta_ayudando():
-                fin_atencion_empleado_1 = (fin_atencion_empleado_1 - reloj)/0.5 + reloj
-                fin_atencion_empleado_2 = tiempo_demora_reparacion + reloj
-                emp_reparacion_2.ocupar(emp_recepcion.atendiendo_a)
-                emp_reparacion_2.atendiendo_a.estado = "Esperando aparato"
-                emp_reparacion_2.atendiendo_a.aparato_electrodomestico.iniciar_reparacion(reloj)
-            else:
-                tiempo_demora_reparacion = rnd_reparacion = ""
+            fin_atencion_empleado_1, fin_atencion_empleado_2,tiempo_demora_reparacion,rnd_reparacion = mandar_a_reparacion(fin_atencion_empleado_1, fin_atencion_empleado_2, emp_recepcion)
 
             if len(emp_recepcion.cola_empleado) > 0:
                 emp_recepcion.atendiendo_a = emp_recepcion.cola_empleado.sacar()
@@ -149,7 +174,7 @@ if __name__ == '__main__':
         # Evento fin_atencion_reparacion_1
         elif evento == 'Fin atención reparación empleado 1':
             if emp_reparacion_2.esta_ayudando():
-                emp_reparacion_2.estado = "Libre"
+                emp_reparacion_2.desocupar()     # esto faltaba
             if emp_inspeccion.es_libre():
                 emp_inspeccion.ocupar(emp_reparacion_1.atendiendo_a)
                 emp_inspeccion.atendiendo_a.aparato_electrodomestico.estado = "Siendo Inspeccionado"
@@ -159,7 +184,7 @@ if __name__ == '__main__':
             emp_reparacion_1.desocupar()
             if len(cola_reparacion.cola) > 0:
                 tiempo_demora_reparacion, rnd_reparacion = numExponencial(media_atencion_reparacion)
-                if not emp_reparacion_2.es_ocupado():
+                if not emp_reparacion_2.es_ocupado():    # --> Se podría validar tranquilamente con if emp_remparacion
                     tiempo_demora_reparacion *= 0.5
                     emp_reparacion_2.ayudar()
                 fin_atencion_empleado_1 = reloj + tiempo_demora_recepcion
@@ -170,14 +195,13 @@ if __name__ == '__main__':
             if len(cola_reparacion.cola) == 0:
                 tiempo_demora_reparacion = rnd_reparacion = fin_atencion_empleado_1 = ""
 
-                # Evento fin_atencion_reparacion_2
+        # Evento fin_atencion_reparacion_2
         elif evento == 'Fin atención reparación empleado 2':
             if emp_reparacion_1.esta_ayudando():
-                emp_reparacion_1.estado = "Libre"   # esto faltaba
+                emp_reparacion_1.desocupar()   # esto faltaba
             if emp_inspeccion.es_libre():
                 emp_inspeccion.ocupar(emp_reparacion_2.atendiendo_a)
                 emp_inspeccion.atendiendo_a.aparato_electrodomestico.estado = "Siendo Inspeccionado"
-
             else:
                 emp_inspeccion.cola_empleado.agregar(emp_reparacion_2.atendiendo_a)
                 emp_inspeccion.atendiendo_a.aparato_electrodomestico.estado = "Esperando Inspeccion"
@@ -197,33 +221,46 @@ if __name__ == '__main__':
 
         # Evento fin_atencion_inspeccion
         elif evento == 'Fin atención inspección':
-            if random.random() <= 0.2:
-                cola_reparacion.agregar(emp_inspeccion.atendiendo_a)
+            if random.random() < 0.25:
+                mandar_a_reparacion(fin_atencion_empleado_1, fin_atencion_empleado_2, emp_inspeccion)
                 emp_inspeccion.atendiendo_a.aparato_electrodomestico.iniciar_reparacion(emp_inspeccion.atendiendo_a.aparato_electrodomestico.iniciar_reparacion)
                 emp_inspeccion.desocupar()
             elif emp_cobro.es_libre():
                 emp_cobro.ocupar(emp_inspeccion.atendiendo_a)
-                emp_cobro.estado = "Siendo Cobrado"
-
+                emp_cobro.atendiendo_a.estado = "Siendo Cobrado"
             else:
                 emp_cobro.cola_empleado.agregar(emp_reparacion_2.atendiendo_a)
-                emp_cobro.estado = "Esperando Cobro"
+                emp_inspeccion.atendiendo_a.estado = "Esperando Cobro"
             emp_inspeccion.desocupar()
 
         # Evento fin atencion cobro
         elif evento == 'Fin atención cobro':
-            pass
-
+            if len(emp_cobro.cola_empleado) > 0:
+                emp_cobro.ocupar(emp_cobro.cola_empleado.sacar())
+                emp_cobro.atendiendo_a.estado = "Siendo Cobrado"
+            else:
+                emp_cobro.desocupar()
         vector = [evento, reloj, rnd_llegada_cliente, tiempo_entre_llegada_cliente, proxima_llegada_cliente,
                   rnd_fin_recepcion, tiempo_demora_recepcion, fin_atencion_recepcion,
                   rnd_reparacion, tiempo_demora_reparacion, fin_atencion_empleado_1, fin_atencion_empleado_2,
                   rnd_inspeccion, tiempo_demora_inspeccion, fin_atencion_inspeccion,
-                  rnd_fallos, hay_fallas, rnd_fin_atencion_cobro, tiempo_demora_cobro, fin_atencion_cobro, estado_recepcion,
+                  rnd_fallos, hay_fallas, rnd_fin_atencion_cobro, tiempo_demora_cobro, fin_atencion_cobro,
+                  estado_recepcion,
                   cola_recepcion, estado1, estado2, cola_en_reparacion,
                   estado_inspeccion, cola_inspeccion, estado_cobro, cola_cobro, contador_tres_fases, contador_atendidos,
                   contador_volvieron_a_reparacion, contador_demoraron_mas30_en_fase,
                   ac_tiempo_demora_reparacion, ac_tiempo_demora_de_los_que_no_esperaron]
+
+        for n in range(len(vector)):
+            if n in [2,3,5,6,8,9,12,13,15,16,17,18]:
+                if str(vector[n]) == str(vector_ant[n]):
+                    vector[n] = ""
+
         if i < 500:
             print(vector)
+    # Finalizo temporizador
+    fin = time.time()
+    tiempo_transcurrido = fin - inicio
+    print(tiempo_transcurrido)
 
 

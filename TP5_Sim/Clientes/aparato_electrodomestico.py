@@ -8,3 +8,6 @@ class Aparato:
     def iniciar_reparacion(self, reloj):
         self.inicio_reparacion = reloj
         self.estado = "Siendo Reparado"
+
+    def paso_estado_esperando(self):
+        self.esperando = True
