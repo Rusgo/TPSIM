@@ -43,7 +43,7 @@ class Empleado:
 
     def pasar_a(self, empleado_siguiente, reloj):
         empleado_siguiente.atender(self.atendiendo_a, reloj)
-        self.atender_siguiente(reloj)
+        #self.atender_siguiente(reloj) #ESTO HACIA QUE SALGAN DE A DOS EN LA COLA
 
     
     def atender_siguiente(self, reloj):
