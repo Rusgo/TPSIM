@@ -1,13 +1,13 @@
-
+from collections import deque
 class Cola:
     def __init__(self):
-        self.cola = []
+        self.cola = deque([])
 
     def __len__(self):
         return len(self.cola)
 
     def sacar(self):
-        return self.cola.pop()
+        return self.cola.popleft()
 
     def agregar(self, elemento):
-        self.cola = [elemento] + self.cola
+        self.cola.append(elemento)
