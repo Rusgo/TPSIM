@@ -9,4 +9,5 @@ class Cola:
         return self.cola.pop()
 
     def agregar(self, elemento):
+        elemento.aparato_electrodomestico.esperando = True
         self.cola = [elemento] + self.cola

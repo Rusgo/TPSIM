@@ -59,4 +59,4 @@ class Empleado:
         self.fin = self.tiempo_demora + reloj
 
     def esperar(self, cliente):
-        pass
+        cliente.aparato_electrodomestico.paso_estado_esperando()

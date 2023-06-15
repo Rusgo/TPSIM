@@ -48,7 +48,6 @@ if __name__ == '__main__':
     button1 = tk.Radiobutton(ventana, text="normal", variable=opcion_seleccionada, value="Normal", command=toggle_entry)
     button2 = tk.Radiobutton(ventana, text="poisson", variable=opcion_seleccionada, value="opcion_seleccionada", command=toggle_entry)
 
-
     # Los colocamos en la ventana
     button1.pack()
     button2.pack()

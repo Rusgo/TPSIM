@@ -4,7 +4,7 @@ from distribuciones import numExponencial
 
 class EmpleadoReparacion(Empleado):
     def __init__(self, estado, cola, media):
-        super().__init__(estado, cola , media)
+        super().__init__(estado, cola, media)
         self.compañero = None
 
     def ayudar(self):
@@ -17,6 +17,7 @@ class EmpleadoReparacion(Empleado):
         super().ocupar(cliente, reloj)
         cliente.estado = "Esperando Aparato"
         cliente.aparato_electrodomestico.estado = "Siendo Reparado"
+        cliente.aparato_electrodomestico.inicio_reparacion = reloj
 
     def esperar(self, cliente):
         cliente.estado = "Esperando Aparato"
@@ -43,7 +44,7 @@ class EmpleadoReparacion(Empleado):
         # elif self.es_libre(): Atiendo yo solo
         else:
             self.cola_empleado.agregar(cliente)
-
+            self.esperar(cliente)
 
     def atender_siguiente(self, reloj):
         if self.compañero.esta_ayudando():
@@ -56,4 +57,10 @@ class EmpleadoReparacion(Empleado):
         if len(self.cola_empleado) > 0:
             sig_cliente = self.cola_empleado.sacar()
             self.atender(sig_cliente, reloj)
+
+    def pasar_a(self, empleado_siguiente, reloj):
+        tiempo_reparacion = self.atendiendo_a.aparato_electrodomestico.calcular_reparacion(reloj)
+        super().pasar_a(empleado_siguiente, reloj)
+        return tiempo_reparacion
+
 

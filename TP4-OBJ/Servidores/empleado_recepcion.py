@@ -2,9 +2,6 @@ from Servidores.emplead import Empleado
 
 
 class EmpleadoRecepcion(Empleado):
-    def ocupar(self, cliente, media):
-        super().ocupar(cliente, media)
-
 
     def ocupar(self, cliente, reloj):
         super().ocupar(cliente, reloj)

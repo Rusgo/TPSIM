@@ -4,6 +4,8 @@ class Cliente:
         self.aparato_electrodomestico = aparato
         self.estado = estadoa
 
+    def finalizar(self):
+        self.estado = "Cobrado"
 
     
 
